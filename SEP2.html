@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>System Engineering Project 2</title>
+</head>
+<style>
+    ul {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  background-color: #353535;
+}
+
+li {
+  float: left;
+}
+
+li a {
+  display: block;
+  text-align: center;
+  padding: 14px 16px;
+  text-decoration: none;
+  border: 1px solid #353535;
+  color: white;
+}
+
+li a:hover{
+    background-color: rgba(88, 168, 139, 0.644);
+    color:#353535;
+    transition: 0.5s;
+}
+
+    input,select{
+        width: 400px;
+    }
+
+    button {
+	  background-color: #4a8d74;
+	  border: none;
+	  color: white;
+	  padding: 12px 10px;
+	  text-align: center;
+	  text-decoration: none;
+	  display: inline-block;
+	  font-size: 18px;
+    }
+    button:hover{
+        background-color: #badace;
+        color:black;
+        transition-duration: 0.5s;
+    }
+
+    .patientHeading{
+        background-color: #4a8d74;
+        padding: 1%;
+        font-size: 30px;
+        font-family:Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+        letter-spacing: 10px;
+        text-align: center;
+    }
+
+    .smallButtons{
+        background-color: #82d1b4;
+        width: 250px;
+        font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+        font-size: 15px;
+        transition: 0.5s;
+    }
+    .smallButtons:hover{
+        background-color: #4a8d74;
+        color:black;
+    }
+
+    .patientInput{
+        width: 100%;
+        height: 450px;
+        text-align: center;
+        padding-top: 30px;
+        margin-right: auto;
+        margin-left: auto;
+        background-color: #82d1b4;
+        align-content: center;
+    }
+
+    .patientForm{
+        background-color: white;
+        width: 700px;
+        height: 330px;
+        margin-left: 30%;
+        padding: 15px;
+        font-family:Arial, Helvetica, sans-serif;
+        font-weight: bold;
+    }
+
+    /*LOGIN PAGE STUFFS*/
+    
+</style>
+<body>
+<div class="patientHeading">
+	<h1 style="color: #353535;">PATIENT DIETARY DATABASE</h1>
+    <ul>
+        <li><a>HOME</a></li>
+        <li><a href="sep2loginpage.html">STAFF LOGIN</a></li>
+        <li><a>LOGOUT</a></li>
+    </ul>
+</div>
+
+<br>
+<div class="patientInput">
+<form class="patientForm">
+    <label>PATIENT NAME</label><br>
+    <input type="text" id="PatientName"><br><br>
+    <label>WARD NUMBER</label><br>
+    <input type="text" id="WardNumber"><br><br>
+    <label>BED NUMBER</label><br>
+    <input type="text" id="BedNumber"><br><br>
+    <label>CUISINE TYPE</label><br>
+    <select id="cuisinetype">
+        <option value="Halal">Halal</option>
+        <option value="NonHalal">Non-Halal</option>
+        <option value="Vegetarian">Vegetarian</option>
+    </select><br><br>
+    <label>RESTRICTIONS</label><br>
+    <input type="text" id="Restrictions"><br><br>
+    <button id="Addbtn">ADD ENTRY</button>
+    <button id="Retrievebtn">RETRIEVE ENTRY</button>
+    <button id="Updatebtn">UPDATE ENTRY</button>
+    <button id="Deletebtn">DELETE ENTRY</button>
+  </form> 
+  </div>
+	
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-app.js";
+        import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-analytics.js";
+        import { getFirestore, collection, doc, setDoc, getDoc, updateDoc, deleteDoc, query, orderBy, getDocs } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyCH8A8TmFvEYvUuC-U-NNf8Fmp61HFACCY",
+            authDomain: "hospital-patients-health-rec.firebaseapp.com",
+            projectId: "hospital-patients-health-rec",
+            storageBucket: "hospital-patients-health-rec.appspot.com",
+            messagingSenderId: "208141066565",
+            appId: "1:208141066565:web:c9f3f39d505dbf6b585e2c",
+            measurementId: "G-DQ9QHHZ2ZG"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const analytics = getAnalytics(app);  
+        const db = getFirestore(app);
+
+        const PatientName = document.getElementById('PatientName');
+        const WardNumber = document.getElementById('WardNumber');
+        const BedNumber = document.getElementById('BedNumber');
+        const cuisinetype = document.getElementById('cuisinetype');
+        const Restrictions = document.getElementById('Restrictions');
+
+        const Addbtn = document.getElementById('Addbtn');
+        const Retrievebtn = document.getElementById('Retrievebtn');
+        const Updatebtn = document.getElementById('Updatebtn');
+        const Deletebtn = document.getElementById('Deletebtn');
+		
+		const ViewDatabtn = document.getElementById('Deletebtn');
+
+		async function AddData(event) {
+            event.preventDefault();
+			try {
+				const wardNumber = WardNumber.value;
+				const bedNumber = BedNumber.value;
+				const patientName = PatientName.value;
+				const cuisineType = cuisinetype.value;
+				const restrictions = Restrictions.value;
+				const staffId = 'staff_id_example'; 
+
+				// Check if required fields are empty
+				if (!wardNumber || !bedNumber || !patientName) {
+					alert("Ward Number, Bed Number, and Patient Name are required fields.");
+					return;
+				}
+
+				const patientRef = doc(db, 'Wards', wardNumber, 'Bed_Number', bedNumber);
+
+				await setDoc(patientRef, {
+					Ward_Number: wardNumber,
+					Patient_Name: patientName,
+					Bed_Number: bedNumber,
+					Cuisine_Type: cuisineType,
+					Restrictions: restrictions,
+					Prepared_By: staffId
+				});
+
+				alert("Data added successfully");
+			} catch (error) {
+				alert("Failed to add data");
+				console.error("Error adding data: ", error);
+			}
+		}
+
+		async function RetrieveData(event) {
+            event.preventDefault();
+			try {
+				const wardNumber = WardNumber.value;
+				const bedNumber = BedNumber.value;
+				const patientName = PatientName.value;
+
+				let wardRef;
+
+				if (wardNumber && bedNumber && patientName) {
+					// Create the doc reference with all three parameters
+					wardRef = doc(db, 'Wards', wardNumber, 'Bed_Number', bedNumber);
+				} else if (wardNumber && bedNumber) {
+					// Create the doc reference with ward number and bed number
+					wardRef = doc(db, 'Wards', wardNumber, 'Bed_Number', bedNumber);
+				} else if (wardNumber && patientName) {
+					// Query for ward number and patient name
+					const querySnapshot = await getDocs(collection(db, 'Wards', wardNumber, 'Bed_Number'));
+					querySnapshot.forEach((doc) => {
+						if (doc.data().Patient_Name === patientName) {
+							wardRef = doc.ref;
+						}
+					});
+				} else if (patientName) {
+					// Query for patient name across all wards and beds
+					const querySnapshot = await getDocs(collection(db, 'Wards'));
+					querySnapshot.forEach((wardDoc) => {
+						wardDoc.ref.collection('Bed_Number').get().then((bedSnapshot) => {
+							bedSnapshot.forEach((doc) => {
+								if (doc.data().Patient_Name === patientName) {
+									wardRef = doc.ref;
+								}
+							});
+						});
+					});
+				}
+
+				if (wardRef) {
+					const patientSnapshot = await getDoc(wardRef);
+
+					if (patientSnapshot.exists()) {
+						const patientData = patientSnapshot.data();
+
+						// Populate input fields with retrieved data
+						PatientName.value = patientData.Patient_Name || '';
+						BedNumber.value = patientData.Bed_Number || '';
+						cuisinetype.value = patientData.Cuisine_Type || '';
+						Restrictions.value = patientData.Restrictions || '';
+
+						alert("Data retrieved successfully");
+					} else {
+						alert(`No data found for Ward Number: ${wardNumber}, Bed Number: ${bedNumber}, Patient Name: ${patientName}`);
+					}
+				} else {
+					alert("Please provide one valid search criterion (Ward Number, Bed Number, or Patient Name).");
+				}
+			} catch (error) {
+				alert("Failed to retrieve data");
+				console.error("Error retrieving data: ", error);
+			}
+		}
+
+
+        async function UpdateData(event) {
+            event.preventDefault();
+            try {
+                const wardNumber = WardNumber.value;
+                const bedNumber = BedNumber.value;
+                const patientRef = doc(db, 'Wards', wardNumber, 'Bed_Number', bedNumber);
+                const patientSnapshot = await getDoc(patientRef);
+
+                if (patientSnapshot.exists()) {
+                    const staffId = 'staff_id_example';
+                    const currentPreparedBy = patientSnapshot.data().Prepared_By;
+
+                    if (currentPreparedBy !== staffId) {
+                        await updateDoc(patientRef, { Prepared_By: staffId });
+                        console.log(`Updated Firebase DB with staff_id: ${staffId} for ward: ${wardNumber} bed: ${bedNumber}`);
+                    }
+                } else {
+                    console.log(`Document with Bed_Number ${bedNumber} does not exist.`);
+                }
+            } catch (error) {
+                console.log("Error updating data: ", error);
+            }
+        }
+
+        async function DeleteData(event) {
+            event.preventDefault();
+            try {
+                const wardNumber = WardNumber.value;
+                const bedNumber = BedNumber.value;
+                const patientRef = doc(db, 'Wards', wardNumber, 'Bed_Number', bedNumber);
+
+                await deleteDoc(patientRef);
+                alert("Data deleted successfully");
+            } catch (error) {
+                alert("Failed to delete data");
+                console.log(error);
+            }
+        }
+
+        Addbtn.addEventListener('click', AddData);
+        Retrievebtn.addEventListener('click', RetrieveData);
+        Updatebtn.addEventListener('click', UpdateData);
+        Deletebtn.addEventListener('click', DeleteData);
+    </script>
+</body>
+</html>
