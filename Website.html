@@ -4,62 +4,131 @@
     <title>System Engineering Project 2</title>
 </head>
 <style>
-    label {
-        display: inline-block;
-        font-size: 16px;
-        font-family: Arial, Helvetica, sans-serif;
-        width: 110px;
+    ul {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  background-color: #353535;
+}
+
+li {
+  float: left;
+}
+
+li a {
+  display: block;
+  text-align: center;
+  padding: 14px 16px;
+  text-decoration: none;
+  border: 1px solid #353535;
+  color: white;
+}
+
+li a:hover{
+    background-color: rgba(88, 168, 139, 0.644);
+    color:#353535;
+    transition: 0.5s;
+}
+
+    input,select{
+        width: 400px;
     }
-    input, select {
-        width: 180px;
-        height: 30px;
-        font-size: 16px;
-        font-family: Arial, Helvetica, sans-serif;
-    }
+
     button {
-	  background-color: #04AA6D;
+	  background-color: #4a8d74;
 	  border: none;
 	  color: white;
-	  padding: 15px 32px;
+	  padding: 12px 10px;
 	  text-align: center;
 	  text-decoration: none;
 	  display: inline-block;
-	  font-size: 16px;
+	  font-size: 18px;
     }
+    button:hover{
+        background-color: #badace;
+        color:black;
+        transition-duration: 0.5s;
+    }
+
+    .patientHeading{
+        background-color: #4a8d74;
+        padding: 1%;
+        font-size: 30px;
+        font-family:Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+        letter-spacing: 10px;
+        text-align: center;
+    }
+
+    .smallButtons{
+        background-color: #82d1b4;
+        width: 250px;
+        font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+        font-size: 15px;
+        transition: 0.5s;
+    }
+    .smallButtons:hover{
+        background-color: #4a8d74;
+        color:black;
+    }
+
+    .patientInput{
+        width: 100%;
+        height: 450px;
+        text-align: center;
+        padding-top: 30px;
+        margin-right: auto;
+        margin-left: auto;
+        background-color: #82d1b4;
+        align-content: center;
+    }
+
+    .patientForm{
+        background-color: white;
+        width: 700px;
+        height: 330px;
+        margin-left: 30%;
+        padding: 15px;
+        font-family:Arial, Helvetica, sans-serif;
+        font-weight: bold;
+    }
+
+    /*LOGIN PAGE STUFFS*/
+    
 </style>
 <body>
+<div class="patientHeading">
+	<h1 style="color: #353535;">PATIENT DIETARY DATABASE</h1>
+    <ul>
+        <li><a>HOME</a></li>
+        <li><a href="sep2loginpage.html">STAFF LOGIN</a></li>
+        <li><a>LOGOUT</a></li>
+    </ul>
+</div>
 
-	<h1> Patient Database Viewer </h1>
-
-
-    <label>Patient Name</label>
-    <input type="text" id="PatientName">
-    <br><br>
-
-    <label>Ward Number</label>
-    <input type="text" id="WardNumber">
-    <br><br>
-    
-    <label>Bed Number</label>
-    <input type="text" id="BedNumber">
-    <br><br>
-    
-    <label>Cuisine Type</label>
+<br>
+<div class="patientInput">
+<form class="patientForm">
+    <label>PATIENT NAME</label><br>
+    <input type="text" id="PatientName"><br><br>
+    <label>WARD NUMBER</label><br>
+    <input type="text" id="WardNumber"><br><br>
+    <label>BED NUMBER</label><br>
+    <input type="text" id="BedNumber"><br><br>
+    <label>CUISINE TYPE</label><br>
     <select id="cuisinetype">
         <option value="Halal">Halal</option>
         <option value="NonHalal">Non-Halal</option>
         <option value="Vegetarian">Vegetarian</option>
-    </select>
-    <br><br>
-    
-    <label>Restrictions</label>
-    <input type="text" id="Restrictions">
-    <br><br>
-    
-    <button id="Addbtn">Add Entry</button>
-    <button id="Retrievebtn">Retrieve Entry</button>
-    <button id="Updatebtn">Update Entry</button>
-    <button id="Deletebtn">Delete Entry</button>
+    </select><br><br>
+    <label>RESTRICTIONS</label><br>
+    <input type="text" id="Restrictions"><br><br>
+    <button id="Addbtn">ADD ENTRY</button>
+    <button id="Retrievebtn">RETRIEVE ENTRY</button>
+    <button id="Updatebtn">UPDATE ENTRY</button>
+    <button id="Deletebtn">DELETE ENTRY</button>
+  </form> 
+  </div>
 	
 
     <script type="module">
@@ -95,7 +164,8 @@
 		
 		const ViewDatabtn = document.getElementById('Deletebtn');
 
-		async function AddData() {
+		async function AddData(event) {
+            event.preventDefault();
 			try {
 				const wardNumber = WardNumber.value;
 				const bedNumber = BedNumber.value;
@@ -128,7 +198,8 @@
 			}
 		}
 
-		async function RetrieveData() {
+		async function RetrieveData(event) {
+            event.preventDefault();
 			try {
 				const wardNumber = WardNumber.value;
 				const bedNumber = BedNumber.value;
@@ -190,7 +261,8 @@
 		}
 
 
-        async function UpdateData() {
+        async function UpdateData(event) {
+            event.preventDefault();
             try {
                 const wardNumber = WardNumber.value;
                 const bedNumber = BedNumber.value;
@@ -213,7 +285,8 @@
             }
         }
 
-        async function DeleteData() {
+        async function DeleteData(event) {
+            event.preventDefault();
             try {
                 const wardNumber = WardNumber.value;
                 const bedNumber = BedNumber.value;
