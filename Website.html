@@ -25,6 +25,7 @@ li a {
   color: white;
 }
 
+
 li a:hover{
     background-color: rgba(88, 168, 139, 0.644);
     color:#353535;
@@ -95,46 +96,85 @@ li a:hover{
 
     /*LOGIN PAGE STUFFS*/
     
+    #resultsTable {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 20px;
+    }
+
+    #resultsTable th, #resultsTable td {
+        border: 1px solid #ddd;
+        padding: 8px;
+        text-align: left;
+    }
+
+    #resultsTable th {
+        background-color: #4a8d74;
+        color: white;
+    }
+
+    #resultsTable tr:nth-child(even) {
+        background-color: #f2f2f2;
+    }
 </style>
 <body>
-<div class="patientHeading">
-	<h1 style="color: #353535;">PATIENT DIETARY DATABASE</h1>
-    <ul>
-        <li><a>HOME</a></li>
-        <li><a href="sep2loginpage.html">STAFF LOGIN</a></li>
-        <li><a>LOGOUT</a></li>
-    </ul>
-</div>
+    <div class="patientHeading">
+        <h1 style="color: #353535;">PATIENT DIETARY DATABASE</h1>
+        <ul>
+            <li><a>HOME</a></li>
+            <li><a href="sep2loginpage.html">STAFF LOGIN</a></li>
+            <li><a>LOGOUT</a></li>
+        </ul>
+    </div>
 
-<br>
-<div class="patientInput">
-<form class="patientForm">
-    <label>PATIENT NAME</label><br>
-    <input type="text" id="PatientName"><br><br>
-    <label>WARD NUMBER</label><br>
-    <input type="text" id="WardNumber"><br><br>
-    <label>BED NUMBER</label><br>
-    <input type="text" id="BedNumber"><br><br>
-    <label>CUISINE TYPE</label><br>
-    <select id="cuisinetype">
-        <option value="Halal">Halal</option>
-        <option value="NonHalal">Non-Halal</option>
-        <option value="Vegetarian">Vegetarian</option>
-    </select><br><br>
-    <label>RESTRICTIONS</label><br>
-    <input type="text" id="Restrictions"><br><br>
-    <button id="Addbtn">ADD ENTRY</button>
-    <button id="Retrievebtn">RETRIEVE ENTRY</button>
-    <button id="Updatebtn">UPDATE ENTRY</button>
-    <button id="Deletebtn">DELETE ENTRY</button>
-  </form> 
-  </div>
+    <br>
+    <div class="patientInput">
+        <form class="patientForm" id="patientForm">
+            <label>PATIENT NAME</label><br>
+            <input type="text" id="PatientName"><br><br>
+            <label>WARD NUMBER</label><br>
+            <input type="text" id="WardNumber"><br><br>
+            <label>BED NUMBER</label><br>
+            <input type="text" id="BedNumber"><br><br>
+            <label>CUISINE TYPE</label><br>
+            <select id="cuisinetype">
+                <option value="">Select Cuisine Type</option>
+                <option value="Halal">Halal</option>
+                <option value="NonHalal">Non-Halal</option>
+                <option value="Vegetarian">Vegetarian</option>
+            </select><br><br>
+            <label>RESTRICTIONS</label><br>
+            <input type="text" id="Restrictions"><br><br>
+            <button type="button" id="Addbtn">ADD ENTRY</button>
+            <button type="button" id="Retrievebtn">RETRIEVE ENTRY</button>
+            <button type="button" id="Updatebtn">UPDATE ENTRY</button>
+            <button type="button" id="Deletebtn">DELETE ENTRY</button>
+            <button type="button" id="Viewbtn">VIEW ENTRY</button>
+        </form> 
+    </div>
+    <div id="resultsContainer" style="display: none;">
+        <h2>Search Results</h2>
+        <table id="resultsTable">
+            <thead>
+                <tr>
+                    <th>Patient Name</th>
+                    <th>Ward Number</th>
+                    <th>Bed Number</th>
+                    <th>Cuisine Type</th>
+                    <th>Restrictions</th>
+                    <th>Prepared By</th>
+                </tr>
+            </thead>
+            <tbody id="resultsBody">
+            </tbody>
+        </table>
+    </div>
 	
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-app.js";
         import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-analytics.js";
-        import { getFirestore, collection, doc, setDoc, getDoc, updateDoc, deleteDoc, query, orderBy, getDocs } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-firestore.js";
+        import { getFirestore, collectionGroup, collection, doc, setDoc, getDoc, updateDoc, deleteDoc, query, orderBy, getDocs } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyCH8A8TmFvEYvUuC-U-NNf8Fmp61HFACCY",
@@ -157,14 +197,20 @@ li a:hover{
         const cuisinetype = document.getElementById('cuisinetype');
         const Restrictions = document.getElementById('Restrictions');
 
-        const Addbtn = document.getElementById('Addbtn');
-        const Retrievebtn = document.getElementById('Retrievebtn');
-        const Updatebtn = document.getElementById('Updatebtn');
-        const Deletebtn = document.getElementById('Deletebtn');
-		
-		const ViewDatabtn = document.getElementById('Deletebtn');
+        // const Addbtn = document.getElementById('Addbtn');
+        // const Retrievebtn = document.getElementById('Retrievebtn');
+        // const Updatebtn = document.getElementById('Updatebtn');
+        // const Deletebtn = document.getElementById('Deletebtn');
+        // const Viewbtn = document.getElementById('Viewbtn');
 
-		async function AddData(event) {
+        Addbtn.addEventListener('click', AddData);
+        Retrievebtn.addEventListener('click', RetrieveData);
+        Updatebtn.addEventListener('click', UpdateData);
+        Deletebtn.addEventListener('click', DeleteData);
+        Viewbtn.addEventListener('click', ViewData);
+		
+        
+        async function AddData(event) {
             event.preventDefault();
 			try {
 				const wardNumber = WardNumber.value;
@@ -186,7 +232,7 @@ li a:hover{
 					Ward_Number: wardNumber,
 					Patient_Name: patientName,
 					Bed_Number: bedNumber,
-					Cuisine_Type: cuisineType,
+					Cuisine_Type: cuisineType || null,
 					Restrictions: restrictions,
 					Prepared_By: staffId
 				});
@@ -300,10 +346,55 @@ li a:hover{
             }
         }
 
-        Addbtn.addEventListener('click', AddData);
-        Retrievebtn.addEventListener('click', RetrieveData);
-        Updatebtn.addEventListener('click', UpdateData);
-        Deletebtn.addEventListener('click', DeleteData);
+        async function ViewData(event) {
+            event.preventDefault();
+            try {
+                const wardNumber = WardNumber.value.trim();
+                const bedNumber = BedNumber.value.trim();
+                const patientName = PatientName.value.trim().toLowerCase();
+                const cuisineType = cuisinetype.value;
+                const restrictions = Restrictions.value.trim().toLowerCase();
+
+                const querySnapshot = await getDocs(collectionGroup(db, 'Bed_Number'));
+                const results = querySnapshot.docs
+                    .map(doc => doc.data())
+                    .filter(patient =>
+                        (!wardNumber || patient.Ward_Number === wardNumber) &&
+                        (!bedNumber || patient.Bed_Number === bedNumber) &&
+                        (!patientName || patient.Patient_Name.toLowerCase().includes(patientName)) &&
+                        (!cuisineType || patient.Cuisine_Type === cuisineType || (cuisineType === "" && !patient.Cuisine_Type)) &&
+                        (!restrictions || patient.Restrictions.toLowerCase().includes(restrictions))
+                    );
+
+                const resultsContainer = document.getElementById('resultsContainer');
+                const resultsBody = document.getElementById('resultsBody');
+                resultsBody.innerHTML = '';
+
+                if (results.length > 0) {
+                    results.forEach(patient => {
+                        const row = resultsBody.insertRow();
+                        row.insertCell().textContent = patient.Patient_Name;
+                        row.insertCell().textContent = patient.Ward_Number;
+                        row.insertCell().textContent = patient.Bed_Number;
+                        row.insertCell().textContent = patient.Cuisine_Type || 'Not specified';
+                        row.insertCell().textContent = patient.Restrictions;
+                        row.insertCell().textContent = patient.Prepared_By;
+                    });
+                    resultsContainer.style.display = 'block';
+                } else {
+                    resultsContainer.style.display = 'none';
+                    alert('No matching patients found.');
+                }
+            } catch (error) {
+                console.error("Error viewing data: ", error);
+                alert("Failed to view data. Check console for details.");
+            }
+        }
+
+        document.getElementById('patientForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+        });
+
     </script>
 </body>
 </html>
