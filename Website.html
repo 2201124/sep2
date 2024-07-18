@@ -4,12 +4,21 @@
     <title>System Engineering Project 2</title>
 </head>
 <style>
+
+footer{
+    background-color: #9dc6f5;
+    font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+    font-size: 15px;
+}
+body{
+    background-color: #c9dff8;
+}
     ul {
   list-style-type: none;
   margin: 0;
   padding: 0;
   overflow: hidden;
-  background-color: #353535;
+  background-color: #4e4e4e;
 }
 
 li {
@@ -21,15 +30,16 @@ li a {
   text-align: center;
   padding: 14px 16px;
   text-decoration: none;
-  border: 1px solid #353535;
-  color: white;
+  border: 1px solid #4e4e4e;
+  color: #f1f1f1;
 }
 
 
 li a:hover{
-    background-color: rgba(88, 168, 139, 0.644);
-    color:#353535;
+    background-color: #c2dcfa;
+    color:#4e4e4e;
     transition: 0.5s;
+    border: none;
 }
 
     input,select{
@@ -37,23 +47,24 @@ li a:hover{
     }
 
     button {
-	  background-color: #4a8d74;
+	  background-color: #9dc6f5;
 	  border: none;
-	  color: white;
+	  color: #f1f1f1;
 	  padding: 12px 10px;
 	  text-align: center;
 	  text-decoration: none;
 	  display: inline-block;
 	  font-size: 18px;
+      border-radius: 1em;
     }
     button:hover{
-        background-color: #badace;
-        color:black;
+        background-color: #c9e2fd;
+        color:#4e4e4e;
         transition-duration: 0.5s;
     }
 
     .patientHeading{
-        background-color: #4a8d74;
+        background-color: #9dc6f5;
         padding: 1%;
         font-size: 30px;
         font-family:Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
@@ -70,28 +81,28 @@ li a:hover{
     }
     .smallButtons:hover{
         background-color: #4a8d74;
-        color:black;
+        color:#4e4e4e;
     }
 
     .patientInput{
         width: 100%;
-        height: 450px;
+        height: 600px;
         text-align: center;
-        padding-top: 30px;
         margin-right: auto;
         margin-left: auto;
-        background-color: #82d1b4;
+        background-color: #9dc6f5;
         align-content: center;
     }
 
     .patientForm{
-        background-color: white;
-        width: 700px;
+        background-color: #c9dff8;
+        width: 800px;
         height: 330px;
-        margin-left: 30%;
-        padding: 15px;
+        margin-left: 28%;
+        padding: 50px;
         font-family:Arial, Helvetica, sans-serif;
         font-weight: bold;
+        border-radius: 2em 2em 2em 2em;
     }
 
     /*LOGIN PAGE STUFFS*/
@@ -109,7 +120,7 @@ li a:hover{
     }
 
     #resultsTable th {
-        background-color: #4a8d74;
+        background-color: #9dc6f5;
         color: white;
     }
 
@@ -119,7 +130,7 @@ li a:hover{
 </style>
 <body>
     <div class="patientHeading">
-        <h1 style="color: #353535;">PATIENT DIETARY DATABASE</h1>
+        <h1 style="color: #4e4e4e;">PATIENT DIETARY DATABASE</h1>
         <ul>
             <li><a>HOME</a></li>
             <li><a href="sep2loginpage.html">STAFF LOGIN</a></li>
@@ -144,12 +155,12 @@ li a:hover{
                 <option value="Vegetarian">Vegetarian</option>
             </select><br><br>
             <label>RESTRICTIONS</label><br>
-            <input type="text" id="Restrictions"><br><br>
+            <input type="text" id="Restrictions"><br><br><br>
             <button type="button" id="Addbtn">ADD ENTRY</button>
             <button type="button" id="Retrievebtn">RETRIEVE ENTRY</button>
             <button type="button" id="Updatebtn">UPDATE ENTRY</button>
             <button type="button" id="Deletebtn">DELETE ENTRY</button>
-            <button type="button" id="Viewbtn">VIEW ENTRY</button>
+            <button type="button" id="Viewbtn" href="entries.html">VIEW ENTRY</button>
         </form> 
     </div>
     <div id="resultsContainer" style="display: none;">
@@ -347,49 +358,37 @@ li a:hover{
         }
 
         async function ViewData(event) {
-            event.preventDefault();
-            try {
-                const wardNumber = WardNumber.value.trim();
-                const bedNumber = BedNumber.value.trim();
-                const patientName = PatientName.value.trim().toLowerCase();
-                const cuisineType = cuisinetype.value;
-                const restrictions = Restrictions.value.trim().toLowerCase();
+    event.preventDefault();
+    try {
+        const wardNumber = WardNumber.value.trim();
+        const bedNumber = BedNumber.value.trim();
+        const patientName = PatientName.value.trim().toLowerCase();
+        const cuisineType = cuisinetype.value;
+        const restrictions = Restrictions.value.trim().toLowerCase();
 
-                const querySnapshot = await getDocs(collectionGroup(db, 'Bed_Number'));
-                const results = querySnapshot.docs
-                    .map(doc => doc.data())
-                    .filter(patient =>
-                        (!wardNumber || patient.Ward_Number === wardNumber) &&
-                        (!bedNumber || patient.Bed_Number === bedNumber) &&
-                        (!patientName || patient.Patient_Name.toLowerCase().includes(patientName)) &&
-                        (!cuisineType || patient.Cuisine_Type === cuisineType || (cuisineType === "" && !patient.Cuisine_Type)) &&
-                        (!restrictions || patient.Restrictions.toLowerCase().includes(restrictions))
-                    );
+        const querySnapshot = await getDocs(collectionGroup(db, 'Bed_Number'));
+        const results = querySnapshot.docs
+            .map(doc => doc.data())
+            .filter(patient =>
+                (!wardNumber || patient.Ward_Number === wardNumber) &&
+                (!bedNumber || patient.Bed_Number === bedNumber) &&
+                (!patientName || patient.Patient_Name.toLowerCase().includes(patientName)) &&
+                (!cuisineType || patient.Cuisine_Type === cuisineType || (cuisineType === "" && !patient.Cuisine_Type)) &&
+                (!restrictions || patient.Restrictions.toLowerCase().includes(restrictions))
+            );
 
-                const resultsContainer = document.getElementById('resultsContainer');
-                const resultsBody = document.getElementById('resultsBody');
-                resultsBody.innerHTML = '';
-
-                if (results.length > 0) {
-                    results.forEach(patient => {
-                        const row = resultsBody.insertRow();
-                        row.insertCell().textContent = patient.Patient_Name;
-                        row.insertCell().textContent = patient.Ward_Number;
-                        row.insertCell().textContent = patient.Bed_Number;
-                        row.insertCell().textContent = patient.Cuisine_Type || 'Not specified';
-                        row.insertCell().textContent = patient.Restrictions;
-                        row.insertCell().textContent = patient.Prepared_By;
-                    });
-                    resultsContainer.style.display = 'block';
-                } else {
-                    resultsContainer.style.display = 'none';
-                    alert('No matching patients found.');
-                }
-            } catch (error) {
-                console.error("Error viewing data: ", error);
-                alert("Failed to view data. Check console for details.");
-            }
+        if (results.length > 0) {
+            localStorage.setItem('patientData', JSON.stringify(results));
+            window.open('entries.html', '_blank'); // Open entries.html in a new tab
+        } else {
+            alert('No matching patients found.');
         }
+    } catch (error) {
+        console.error("Error viewing data: ", error);
+        alert("Failed to view data. Check console for details.");
+    }
+}
+
 
         document.getElementById('patientForm').addEventListener('submit', function(e) {
             e.preventDefault();
@@ -397,4 +396,8 @@ li a:hover{
 
     </script>
 </body>
+<br>
+<footer>
+    <a>SEP2 project completed by Group 7.</a>
+</footer>
 </html>

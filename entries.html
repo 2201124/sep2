@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Patient Entries</title>
+    <style>
+        h2{
+            color:#434343;
+            font-size: 40px;
+            padding-left: 200px;
+        }
+        body {
+            background-color: #c9dff8;
+            font-family: Arial, sans-serif;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            border: 1px solid #323232;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #9dc6f5;
+            color: #434343;
+            text-align: center;
+            font-size: 20px;
+        }
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+    <h2>PATIENT ENTRIES</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>PATIENT NAME</th>
+                <th>WARD NUMBER</th>
+                <th>BED NUMBER</th>
+                <th>CUISINE TYPE</th>
+                <th>RESTRICTIONS</th>
+                <th>PREPARED BY</th>
+            </tr>
+        </thead>
+        <tbody id="entriesTableBody">
+        </tbody>
+    </table>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const patientData = JSON.parse(localStorage.getItem('patientData'));
+            const tableBody = document.getElementById('entriesTableBody');
+
+            if (patientData && patientData.length > 0) {
+                patientData.forEach(patient => {
+                    const row = tableBody.insertRow();
+                    row.insertCell().textContent = patient.Patient_Name;
+                    row.insertCell().textContent = patient.Ward_Number;
+                    row.insertCell().textContent = patient.Bed_Number;
+                    row.insertCell().textContent = patient.Cuisine_Type || 'Not specified';
+                    row.insertCell().textContent = patient.Restrictions;
+                    row.insertCell().textContent = patient.Prepared_By;
+                });
+            } else {
+                tableBody.innerHTML = '<tr><td colspan="6">No data available</td></tr>';
+            }
+        });
+    </script>
+</body>
+</html>
